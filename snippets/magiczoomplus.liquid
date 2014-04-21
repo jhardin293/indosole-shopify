@@ -1,0 +1,35 @@
+{% assign MagicToolboxShowMessage = 'Yes' %}
+{% assign MagicToolboxMessage = 'Move your mouse over image or click to enlarge' %}
+{% assign MagicToolboxBigImageSize = 'master' %}
+{% assign MagicToolboxThumbnailImageSize = 'master' %}
+{% assign MagicToolboxSelectorImageSize = 'small' %}
+{% assign MagicToolboxUseCustomWidth = 'Yes' %}
+{% assign MagicToolboxThumbnailImageWidth = '600' %}
+{% if MagicToolboxUseCustomWidth == 'Yes' %}
+<style type="text/css">.MagicZoomPlus > img { max-width: {{ MagicToolboxThumbnailImageWidth }}px !important; }</style>
+{% endif %}
+<div class="MagicToolboxContainer">
+    <a href="{{ product.images[0] | product_img_url: MagicToolboxBigImageSize }}" class="MagicZoomPlus" id="mainImage" title="{{ product.images[0].alt | escape }}"><img itemprop="image" src="{{ product.images[0] | product_img_url: MagicToolboxThumbnailImageSize }}" alt="{{ product.images[0].alt | escape }}" /></a>
+    {% if MagicToolboxShowMessage == 'Yes' %}
+    <div class="MagicToolboxMessage">{{ MagicToolboxMessage }}</div>
+    {% endif %}
+    {% if product.images.size > 1 %}
+    <div class="MagicToolboxSelectorsContainer">
+        {% for image in product.images %}
+        <a href="{{ image | product_img_url: MagicToolboxBigImageSize }}" rel="zoom-id:mainImage" rev="{{ image | product_img_url: MagicToolboxThumbnailImageSize }}" title="{{ image.alt | escape }}"><img src="{{ image | product_img_url: MagicToolboxSelectorImageSize }}" alt="{{ image.alt | escape }}" /></a>
+        {% endfor %}
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function magictoolbox_init_color_options(){
+	jQuery("select[id*='product-select']").change(function(){
+		var mt_selector = jQuery(".MagicToolboxSelectorsContainer a img[alt='"+this.value+"']");
+		if (mt_selector.length) {
+			MagicZoomPlus.update(jQuery('a.MagicZoomPlus').attr('id'),mt_selector.parent().attr('href'),mt_selector.parent().attr('rev'));
+		}
+	})
+}
+jQuery(function(){ setTimeout('magictoolbox_init_color_options()',500); })  
+</script>

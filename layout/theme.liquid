@@ -1,0 +1,653 @@
+<!doctype html>
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width" />
+  <link rel="canonical" href="{{ canonical_url }}" />
+
+  {% if page_description %}
+  <meta name="description" content="{{ page_description }}" />
+  {% endif %}
+
+  {% if template == 'index' %}
+   <title>{{ shop.name }}</title>
+  {% elsif template == '404' %}
+    <title>Page Not Found | {{ shop.name }}</title>
+  {% else %}
+   <title>{{ page_title }} | {{ shop.name }}</title>
+  {% endif %}
+
+  {% include 'fb-open-graph' %}
+
+  {% case settings.header_font %}
+  {% when "Rancho, cursive" %}
+    <link href='http://fonts.googleapis.com/css?family=Rancho' rel='stylesheet' type='text/css'>
+  {% when "'Amatic SC', cursive" %}
+    <link href='http://fonts.googleapis.com/css?family=Amatic+SC:700' rel='stylesheet' type='text/css'>
+  {% when "'Sancreek', cursive" %}
+    <link href='http://fonts.googleapis.com/css?family=Sancreek' rel='stylesheet' type='text/css'>
+  {% when "'Ubuntu Condensed', sans-serif" %}
+    <link href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed' rel='stylesheet' type='text/css'>
+  {% endcase %}
+
+  
+<link rel='stylesheet' id='indosole-fonts-css'  href='//fonts.googleapis.com/css?family=Open+Sans:400italic,700italic,400,700&#038;subset=latin,latin-ext' type='text/css' media='all' />
+<link rel='stylesheet' id='indosole-style-css'  href='//indosole.com/wp-content/themes/INDOSOLE/style.css?ver=3.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='okcreate-app-css'  href='//indosole.com/wp-content/themes/INDOSOLE/okcreate/stylesheets/application.css?ver=3.5.2' type='text/css' media='all' />
+<link rel='stylesheet' id='okcreate-grid-css'  href='//indosole.com/wp-content/themes/INDOSOLE/okcreate/stylesheets/lib/grid_12.css?ver=3.5.2' type='text/css' media='all' />
+  <link rel='stylesheet' id='okcreate-grid-responsive-css'  href='//indosole.com/wp-content/themes/INDOSOLE/okcreate/stylesheets/lib/grid_12_responsive.css?ver=3.5.2' type='text/css' media='all' />
+  
+  
+  {{ 'style.scss.css' | asset_url | stylesheet_tag }}{% if template contains 'product' and settings.main_image_display == 'Lightbox' %}
+  {{ 'jquery.fancybox-1.3.4.css' | asset_url | stylesheet_tag }}{% endif %}
+  {{ 'modernizr.js' | asset_url | script_tag }}
+  {{ 'option_selection.js' | shopify_asset_url | script_tag }}
+
+  {% if template contains 'customers' %}
+    {{ "shopify_common.js" | shopify_asset_url | script_tag }}
+    {{ "customer_area.js"  | shopify_asset_url | script_tag }}
+  {% endif %}
+
+  {{ '//ajax.googleapis.com/ajax/libs/jquery/1.7/jquery.min.js' | script_tag }}
+
+  {{ 'custom.js' | asset_url | script_tag }}
+  
+  {{ content_for_header }}
+
+
+	{% include 'magiczoomplus.headers' %}
+</head>
+
+<body class="{% if customer %}customer-logged-in {% endif %}template{{ template | split: '.' | first | camelize }}">
+
+ {% include 'wp-head' %}
+
+
+<div class="line-div"></div>
+<div class="bg-wrapper"> 
+<div class="bg-wrapper-left"> 
+<div class="bg-wrapper-right">
+  
+
+  <div class="wrapper">
+
+    
+    
+    
+    <!-- Header -->
+    <header id="top" class="clearfix">
+
+      <h1 id="site-title">
+	     {% if collection.handle %}
+        {{ collection.title  }}
+        {% else %}
+        {{ page_title }}  
+        
+        {% endif %}
+        
+      </h1>
+    
+<div id="breadcrumb" class="brea">
+  <a href="http://indosole.com/shop/" class="homepage-link" title="Back to the frontpage">Shop</a>
+  {% if template contains "product" %}
+    {% if collection %}            
+  <span class="separator"> / </span> 
+      {% if collection.handle %}
+         {% capture url %}/collections/{{ collection.handle }}{% endcapture %}
+  {{ collection.title | link_to: url }}
+  <span class="separator"> / </span>   
+  		{{ page_title }}  
+      {% elsif collection.all_products_count > 0 and collection.products.first.type == collection.title %}
+         {{ collection.title | link_to_type }}
+      {% elsif collection.all_products_count > 0 and collection.products.first.vendor == collection.title %}
+         {{ collection.title | link_to_vendor }}
+      {% endif %}
+      {% else %}
+  <span class="separator"> / </span> 
+      {{ product.type | link_to_type }}
+    {% endif %}
+  {% elsif template == "article" %}
+  <span class="separator"> / </span> 
+      {{ blog.title | link_to: blog.url }}
+  {% endif %}
+<!--  <span class="separator"> / </span>
+  <span>{{ page_title }}</span>
+-->
+</div>
+      
+     <!--
+      <h1 id="site-title">
+        <a href="/" title="Home">
+          {% if settings.logo_image == "logo.png" %}
+            <img src="{{ 'logo.png' | asset_url }}" alt="{{ shop.name | escape }}" />
+          {% else %}
+            {{ shop.name | escape }}
+          {% endif %}
+        </a>
+      </h1>
+	-->
+    <!--  <nav id="top-menu" class="clearfix">
+        <ul>
+          {% for link in linklists.main-menu.links %}
+          <li class="{% if forloop.first %}first{% elsif forloop.last %}last{%endif%}">
+            {% assign child_list_handle = link.title | handleize %}
+            {% if linklists[child_list_handle].links != blank %}
+            <div class="has-dropdown">
+              <a href="{{ link.url }}" class="clearfix">
+                <span class="nav-label">{{ link.title | escape }}</span>
+                <span class="nav-arrow"></span>
+              </a>
+              <ul>
+                {% for childlink in linklists[child_list_handle].links %}
+                <li><a href="{{ childlink.url }}">{{ childlink.title | escape }}</a></li>
+                {% endfor %}
+              </ul>
+            </div>
+            {% else %}
+              <a href="{{ link.url }}">{{ link.title | escape }}</a>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+
+        {% if settings.show_header_search %}
+        <form id="header-search" action="/search" method="get">
+          <label for="top-search-input" class="visuallyhidden">Search</label>
+          <input type="text" id="top-search-input" name="q" class="search-input" value="" accesskey="4"  autocomplete="off" placeholder="Search" />
+          <input type="submit" id="top-search-submit" class="search-submit ir" value="Search" />
+        </form>
+        {% endif %}
+      </nav>
+      -->
+      
+      <div id="umbrella">
+        <ul>
+          
+
+
+          <li class="cart-link">
+            <a href="/cart" class="num-items-in-cart">
+              <span class="icon">
+               Cart ({{ cart.item_count }}) <!-- {{ cart.item_count | pluralize: 'item', 'items' }} -->
+              </span>
+            </a>
+          </li>
+
+          {% if shop.customer_accounts_enabled %}
+            {% if customer %}
+            <!--<li>
+              Welcome {{ customer.first_name }} {{ '(Log out)' | customer_logout_link }}
+            </li>-->
+            <li>
+              <span class="sl">/</span> <a href="/account">My Account</a>
+            </li>
+            {% else %}
+            <li>
+              <span class="sl">/</span> {{ 'Log in' | customer_login_link }}
+            </li>
+            {% if shop.customer_accounts_optional %} 
+            <li>
+              <span class="sl">/</span> {{ 'Create an account' | customer_register_link }}
+            </li>
+            {% endif %}
+            {% endif %}
+          {% endif %}          
+          
+          
+<!--
+          <li class="checkout-link">
+            <a href="/cart" class="btn">Check out</a>
+          </li>
+-->
+        </ul>
+      </div><!-- /#umbrella -->
+    </header>
+
+    <!-- Content -->
+    <div class="content-wrapper clearfix">
+
+      {% if template == 'list-collections' %}
+        {% include 'collection-listing' %}
+      {% else %}
+        {{ content_for_layout }}
+      {% endif %}
+
+      {% unless template contains "customer" or template contains "cart" %}
+        {% include 'col-widgets' %}
+      {% endunless %}
+
+    </div><!-- /.content -->
+
+    <!-- Footer -->
+    <footer id="bottom">
+
+      <!--
+      <div id="footer-left">
+        <ul id="footer-nav" class="clearfix">
+        {% for link in linklists.[settings.footer_linklist].links %}
+          <li><a href="{{ link.url }}">{{ link.title | escape }}</a></li>
+        {% endfor %}
+        </ul>
+        <p>&copy; {{ 'now' | date: '%Y' }} <a href="/">{{ shop.name }}</a>. All Rights Reserved.<br />{{ powered_by_link }}</p>
+      </div>
+      
+      <div id="footer-right">
+        <ul id="sm-icons" class="clearfix">
+          {% if settings.twitter_link != '' %}<li><a href="{{ settings.twitter_link }}" title="{{ shop.name }} on Twitter" class="icon-social twitter ir">Twitter</a></li>{% endif %}
+          {% if settings.facebook_link != '' %}<li><a href="{{ settings.facebook_link }}" title="{{ shop.name }} on Facebook" class="icon-social facebook ir">Facebook</a></li>{% endif %}
+          {% if settings.youtube_link != '' %}<li><a href="{{ settings.youtube_link }}" title="{{ shop.name }} on YouTube" class="icon-social youtube ir">YouTube</a></li>{% endif %}
+          {% if settings.atom_link != '' %}<li><a href="{{ settings.atom_link }}" title="{{ shop.name }} news" class="icon-social atom ir">Blog feed</a></li>{% endif %}
+          {% if settings.instagram_link != '' %}<li><a href="{{ settings.instagram_link }}" title="{{ shop.name }} on Instagram" class="icon-social instagram ir">Instagram</a></li>{% endif %}
+          {% if settings.pinterest_link != '' %}<li><a href="{{ settings.pinterest_link }}" title="{{ shop.name }} on Pinterest" class="icon-social pinterest ir">Pinterest</a></li>{% endif %}
+          {% if settings.vimeo_link != '' %}<li><a href="{{ settings.vimeo_link }}" title="{{ shop.name }} on Vimeo" class="icon-social vimeo ir">Vimeo</a></li>{% endif %}
+          {% if settings.tumblr_link != '' %}<li><a href="{{ settings.tumblr_link }}" title="{{ shop.name }} on Tumblr" class="icon-social tumblr ir">Tumblr</a></li>{% endif %}
+          {% if settings.google_link != '' %}<li><a href="{{ settings.google_link }}" title="{{ shop.name }} on Google+" class="icon-social google ir">Google+</a></li>{% endif %}
+        </ul>
+      </div>
+-->
+
+      {% if settings.show_amex or settings.show_discover or settings.show_visa or settings.show_mastercard or settings.show_maestro or settings.show_cirrus or settings.show_paypal or settings.show_google %}
+      <div id="footer-payment-methods">
+        <p>Payment methods we accept</p>
+        {% if settings.show_amex %}       {{ 'cc-amex.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_discover %}   {{ 'cc-discover.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_visa %}       {{ 'cc-visa.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_mastercard %} {{ 'cc-mastercard.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_maestro %}    {{ 'cc-maestro.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_cirrus %}     {{ 'cc-cirrus.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_paypal %}     {{ 'cc-paypal.png' | asset_url | img_tag }} {% endif %}
+        {% if settings.show_google %}     {{ 'cc-google.png' | asset_url | img_tag }} {% endif %}
+      </div>
+      {% endif %}
+
+    </footer>
+
+  </div><!-- /.wrapper -->
+
+  </div></div></div>
+  <div class="line-div"></div>
+
+  {% include 'wp-foot' %}
+
+  
+  
+  <!--[if lt IE 8]>
+  <script>
+    // IE 6+7 do not calculate the width of the #umbrella properly
+    $('#umbrella').width( $('#umbrella ul').width() );
+  </script>
+  <![endif]-->
+
+
+  {% if product.available %}
+  <script>
+    var selectCallback = function(variant, selector) {
+      if (variant && variant.available) {
+        // selected a valid variant
+        $('#add-to-cart').removeClass('disabled').removeAttr('disabled'); // remove unavailable class from add-to-cart button, and re-enable button
+        if(variant.compare_at_price == null){
+          $('.options .price').html('<strong>'+Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}")+'</strong>');
+        } else {
+          $('.options .price').html('<strong>'+Shopify.formatMoney(variant.price, "{{shop.money_with_currency_format}}") + '</strong> <span class="compare_at_price">was <del>' + Shopify.formatMoney(variant.compare_at_price, "{{shop.money_with_currency_format}}") + '</del></span>');
+        }
+      } else {
+        $('#add-to-cart').addClass('disabled').attr('disabled', 'disabled'); // set add-to-cart button to unavailable class and disable button
+        var message = variant ? "Sold Out" : "Unavailable";
+        $('.options .price').text(message); // update price-field message
+      }
+    };
+
+    // initialize multi selector for product
+    $(function() {
+      new Shopify.OptionSelectors("product-select", { product: {{ product | json }}, onVariantSelected: selectCallback });
+      
+      // Add label if only one product option and it isn't 'Title'.
+      {% if product.options.size == 1 and product.options.first != 'Title' %}
+      $('.selector-wrapper:eq(0)').prepend('<label>{{ product.options.first }}</label>');
+      {% endif %}
+  
+      // Auto-select first available variant on page load.
+      {% assign found_one_in_stock = false %}
+      {% for variant in product.variants %}
+        {% if variant.available and found_one_in_stock == false %}
+          {% assign found_one_in_stock = true %}
+          {% for option in product.options %}
+            $('.single-option-selector:eq({{ forloop.index0 }})').val({{ variant.options[forloop.index0] | json }}).trigger('change');
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+      
+    });
+  </script>
+  {% endif %}
+
+  {% if template == 'index' and settings.show_carousel %}
+    {{ 'jquery.tools.min.js' | asset_url | script_tag }}
+  {% endif %}
+
+  {% if template contains 'product' and settings.main_image_display == 'Lightbox' %}
+  {{ 'jquery.easing-1.3.pack.js' | asset_url | script_tag }}
+  {{ 'jquery.mousewheel-3.0.4.pack.js' | asset_url | script_tag }}
+  {{ 'jquery.fancybox-1.3.4.pack.js' | asset_url | script_tag }}
+  <script>
+  $("a[rel='fancybox']").fancybox({
+    'hideOnContentClick': true
+  });
+  </script>
+  {% endif %}
+
+  {{ 'enhance.jquery.js' | asset_url | script_tag }}
+  {{ 'hoverintent.jquery.js' | asset_url | script_tag }}
+  {{ 'radiance.js' | asset_url | script_tag }}
+
+  <script type="text/javascript" charset="utf-8">
+  //<![CDATA[
+
+  // Including api.jquery.js conditionnally.
+  if (typeof Shopify.onCartShippingRatesUpdate === 'undefined') {
+    document.write({{ "api.jquery.js" | shopify_asset_url | script_tag | json }});
+  }
+
+  //]]>
+  </script>
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script src="http://code.jquery.com/jquery-1.9.1.js"></script> 
+<script src="jquery.meanmenu.js"></script> 
+<script>
+jQuery(document).ready(function () {
+    jQuery('header nav').meanmenu();
+});
+</script>
+
+
+
+
+
+<script>
+
+/*!
+ * jQuery meanMenu v2.0.6
+ * @Copyright (C) 2012-2013 Chris Wharton (https://github.com/weare2ndfloor/meanMenu)
+ *
+ */
+!function(e){"use strict";e.fn.meanmenu=function(n){var a={meanMenuTarget:jQuery(this),meanMenuContainer:"body",meanMenuClose:"X",meanMenuCloseSize:"18px",meanMenuOpen:"<span /><span /><span />",meanRevealPosition:"right",meanRevealPositionDistance:"0",meanRevealColour:"",meanRevealHoverColour:"",meanScreenWidth:"480",meanNavPush:"",meanShowChildren:!0,meanExpandableChildren:!0,meanExpand:"+",meanContract:"-",meanRemoveAttrs:!1,onePage:!1,removeElements:""},n=e.extend(a,n),t=window.innerWidth||document.documentElement.clientWidth;return this.each(function(){function e(){if("center"==c){var e=window.innerWidth||document.documentElement.clientWidth,n=e/2-22+"px";P="left:"+n+";right:auto;",A?jQuery(".meanmenu-reveal").animate({left:n}):jQuery(".meanmenu-reveal").css("left",n)}}function a(){jQuery(W).is(".meanmenu-reveal.meanclose")?W.html(o):W.html(s)}function r(){jQuery(".mean-bar,.mean-push").remove(),jQuery(m).removeClass("mean-container"),jQuery(u).show(),E=!1,M=!1,jQuery(x).removeClass("mean-remove")}function i(){if(d>=t){jQuery(x).addClass("mean-remove"),M=!0,jQuery(m).addClass("mean-container"),jQuery(".mean-container").prepend('<div class="mean-bar"><a href="#nav" class="meanmenu-reveal" style="'+R+'">Show Navigation</a><nav class="mean-nav"></nav></div>');var e=jQuery(u).html();jQuery(".mean-nav").html(e),C&&jQuery("nav.mean-nav ul, nav.mean-nav ul *").each(function(){jQuery(this).removeAttr("class"),jQuery(this).removeAttr("id")}),jQuery(u).before('<div class="mean-push" />'),jQuery(".mean-push").css("margin-top",y),jQuery(u).hide(),jQuery(".meanmenu-reveal").show(),jQuery(j).html(s),W=jQuery(j),jQuery(".mean-nav ul").hide(),Q?f?(jQuery(".mean-nav ul ul").each(function(){jQuery(this).children().length&&jQuery(this,"li:first").parent().append('<a class="mean-expand" href="#" style="font-size: '+l+'">'+g+"</a>")}),jQuery(".mean-expand").on("click",function(e){e.preventDefault(),jQuery(this).hasClass("mean-clicked")?(jQuery(this).text(g),jQuery(this).prev("ul").slideUp(300,function(){})):(jQuery(this).text(p),jQuery(this).prev("ul").slideDown(300,function(){})),jQuery(this).toggleClass("mean-clicked")})):jQuery(".mean-nav ul ul").show():jQuery(".mean-nav ul ul").hide(),jQuery(".mean-nav ul li").last().addClass("mean-last"),W.removeClass("meanclose"),jQuery(W).click(function(e){e.preventDefault(),0==E?(W.css("text-align","center"),W.css("text-indent","0"),W.css("font-size",l),jQuery(".mean-nav ul:first").slideDown(),E=!0):(jQuery(".mean-nav ul:first").slideUp(),E=!1),W.toggleClass("meanclose"),a(),jQuery(x).addClass("mean-remove")}),w&&jQuery(".mean-nav ul > li > a:first-child").on("click",function(){jQuery(".mean-nav ul:first").slideUp(),E=!1,jQuery(W).toggleClass("meanclose").html(s)})}else r()}var u=n.meanMenuTarget,m=n.meanMenuContainer;n.meanReveal;var o=n.meanMenuClose,l=n.meanMenuCloseSize,s=n.meanMenuOpen,c=n.meanRevealPosition,v=n.meanRevealPositionDistance,h=n.meanRevealColour;n.meanRevealHoverColour;var d=n.meanScreenWidth,y=n.meanNavPush,j=".meanmenu-reveal",Q=n.meanShowChildren,f=n.meanExpandableChildren,g=n.meanExpand,p=n.meanContract,C=n.meanRemoveAttrs,w=n.onePage,x=n.removeElements;if(navigator.userAgent.match(/iPhone/i)||navigator.userAgent.match(/iPod/i)||navigator.userAgent.match(/iPad/i)||navigator.userAgent.match(/Android/i)||navigator.userAgent.match(/Blackberry/i)||navigator.userAgent.match(/Windows Phone/i))var A=!0;(navigator.userAgent.match(/MSIE 8/i)||navigator.userAgent.match(/MSIE 7/i))&&jQuery("html").css("overflow-y","scroll");var E=!1,M=!1;if("right"==c&&(P="right:"+v+";left:auto;"),"left"==c)var P="left:"+v+";right:auto;";e();var R="background:"+h+";color:"+h+";"+P,W="";A||jQuery(window).resize(function(){t=window.innerWidth||document.documentElement.clientWidth,t>d?r():r(),d>=t?(i(),e()):r()}),window.onorientationchange=function(){e(),t=window.innerWidth||document.documentElement.clientWidth,t>=d&&r(),d>=t&&0==M&&i()},i()})}}(jQuery);
+
+
+</script>
+
+<script>
+
+(function ($) {
+	"use strict";
+    $.fn.meanmenu = function (options) {
+        var defaults = {
+            meanMenuTarget: jQuery(this), // Target the current HTML markup you wish to replace
+            meanMenuContainer: 'body', // Choose where meanmenu will be placed within the HTML
+            meanMenuClose: "X", // single character you want to represent the close menu button
+            meanMenuCloseSize: "18px", // set font size of close button
+            meanMenuOpen: "<span /><span /><span />", // text/markup you want when menu is closed
+            meanRevealPosition: "right", // left right or center positions
+            meanRevealPositionDistance: "0", // Tweak the position of the menu
+            meanRevealColour: "", // override CSS colours for the reveal background
+            meanRevealHoverColour: "", // override CSS colours for the reveal hover
+            meanScreenWidth: "480", // set the screen width you want meanmenu to kick in at
+            meanNavPush: "", // set a height here in px, em or % if you want to budge your layout now the navigation is missing.
+            meanShowChildren: true, // true to show children in the menu, false to hide them
+            meanExpandableChildren: true, // true to allow expand/collapse children
+            meanExpand: "+", // single character you want to represent the expand for ULs
+            meanContract: "-", // single character you want to represent the contract for ULs
+            meanRemoveAttrs: false, // true to remove classes and IDs, false to keep them
+            onePage: false, // set to true for one page sites
+            removeElements: "" // set to hide page elements
+        };
+        var options = $.extend(defaults, options);
+        
+        // get browser width
+        var currentWidth = window.innerWidth || document.documentElement.clientWidth;
+
+        return this.each(function () {
+            var meanMenu = options.meanMenuTarget;
+            var meanContainer = options.meanMenuContainer;
+            var meanReveal = options.meanReveal;
+            var meanMenuClose = options.meanMenuClose;
+            var meanMenuCloseSize = options.meanMenuCloseSize;
+            var meanMenuOpen = options.meanMenuOpen;
+            var meanRevealPosition = options.meanRevealPosition;
+            var meanRevealPositionDistance = options.meanRevealPositionDistance;
+            var meanRevealColour = options.meanRevealColour;
+            var meanRevealHoverColour = options.meanRevealHoverColour;
+            var meanScreenWidth = options.meanScreenWidth;
+            var meanNavPush = options.meanNavPush;
+            var meanRevealClass = ".meanmenu-reveal";
+            var meanShowChildren = options.meanShowChildren;
+            var meanExpandableChildren = options.meanExpandableChildren;
+            var meanExpand = options.meanExpand;
+            var meanContract = options.meanContract;
+            var meanRemoveAttrs = options.meanRemoveAttrs;
+            var onePage = options.onePage;
+            var removeElements = options.removeElements;
+                        
+            //detect known mobile/tablet usage
+            if ( (navigator.userAgent.match(/iPhone/i)) || (navigator.userAgent.match(/iPod/i)) || (navigator.userAgent.match(/iPad/i)) || (navigator.userAgent.match(/Android/i)) || (navigator.userAgent.match(/Blackberry/i)) || (navigator.userAgent.match(/Windows Phone/i)) ) {
+                var isMobile = true;
+            }
+            
+            if ( (navigator.userAgent.match(/MSIE 8/i)) || (navigator.userAgent.match(/MSIE 7/i)) ) {
+            	// add scrollbar for IE7 & 8 to stop breaking resize function on small content sites
+                jQuery('html').css("overflow-y" , "scroll");
+            }
+                        
+            function meanCentered() {
+            	if (meanRevealPosition == "center") {
+	            	var newWidth = window.innerWidth || document.documentElement.clientWidth;
+	            	var meanCenter = ( (newWidth/2)-22 )+"px";
+	            	meanRevealPos = "left:" + meanCenter + ";right:auto;";
+	            	
+	            	if (!isMobile) {	            	
+	            		jQuery('.meanmenu-reveal').css("left",meanCenter); 
+	            	} else {
+		            	jQuery('.meanmenu-reveal').animate({
+		            	    left: meanCenter
+		            	});
+	            	}
+            	}
+            }
+            
+            var menuOn = false;
+            var meanMenuExist = false;
+            
+            if (meanRevealPosition == "right") {
+                meanRevealPos = "right:" + meanRevealPositionDistance + ";left:auto;";
+            }
+            if (meanRevealPosition == "left") {
+                var meanRevealPos = "left:" + meanRevealPositionDistance + ";right:auto;";
+            } 
+            // run center function	
+            meanCentered();
+            
+            // set all styles for mean-reveal
+            var meanStyles = "background:"+meanRevealColour+";color:"+meanRevealColour+";"+meanRevealPos;
+			var $navreveal = "";
+			
+            function meanInner() {
+                // get last class name
+                if (jQuery($navreveal).is(".meanmenu-reveal.meanclose")) {
+                    $navreveal.html(meanMenuClose);
+                } else {
+                    $navreveal.html(meanMenuOpen);
+                }
+            }
+            
+            //re-instate original nav (and call this on window.width functions)
+            function meanOriginal() {
+            	jQuery('.mean-bar,.mean-push').remove();
+            	jQuery(meanContainer).removeClass("mean-container");
+            	jQuery(meanMenu).show();
+            	menuOn = false;
+            	meanMenuExist = false;
+            	jQuery(removeElements).removeClass('mean-remove');
+            }
+            
+            //navigation reveal 
+            function showMeanMenu() {
+                if (currentWidth <= meanScreenWidth) {
+		            jQuery(removeElements).addClass('mean-remove');        
+                	meanMenuExist = true;
+                	// add class to body so we don't need to worry about media queries here, all CSS is wrapped in '.mean-container'
+                	jQuery(meanContainer).addClass("mean-container");
+                	jQuery('.mean-container').prepend('<div class="mean-bar"><a href="#nav" class="meanmenu-reveal" style="'+meanStyles+'">Show Navigation</a><nav class="mean-nav"></nav></div>');
+                    
+                    //push meanMenu navigation into .mean-nav
+                    var meanMenuContents = jQuery(meanMenu).html();
+                    jQuery('.mean-nav').html(meanMenuContents);
+            		
+            		// remove all classes from EVERYTHING inside meanmenu nav
+            		if(meanRemoveAttrs) {
+            			jQuery('nav.mean-nav ul, nav.mean-nav ul *').each(function() {
+            				jQuery(this).removeAttr("class");
+            				jQuery(this).removeAttr("id");
+            			});
+            		}
+                    
+                    // push in a holder div (this can be used if removal of nav is causing layout issues)
+                    jQuery(meanMenu).before('<div class="mean-push" />');
+                    jQuery('.mean-push').css("margin-top",meanNavPush);
+                    
+                    // hide current navigation and reveal mean nav link
+                    jQuery(meanMenu).hide();
+                    jQuery(".meanmenu-reveal").show();
+                    
+                    // turn 'X' on or off 
+                    jQuery(meanRevealClass).html(meanMenuOpen);
+                    $navreveal = jQuery(meanRevealClass);
+                    
+                    //hide mean-nav ul
+                    jQuery('.mean-nav ul').hide();
+                    
+                    // hide sub nav
+	                   if(meanShowChildren) {
+	                   		// allow expandable sub nav(s)
+	                       if(meanExpandableChildren){
+		                       jQuery('.mean-nav ul ul').each(function() {
+		                           if(jQuery(this).children().length){
+		                               jQuery(this,'li:first').parent().append('<a class="mean-expand" href="#" style="font-size: '+ meanMenuCloseSize +'">'+ meanExpand +'</a>');                               
+		                           }
+		                       });
+		                       jQuery('.mean-expand').on("click",function(e){
+		                       		e.preventDefault();
+		                       	   if (jQuery(this).hasClass("mean-clicked")) {
+		                       	   		jQuery(this).text(meanExpand);
+		                               jQuery(this).prev('ul').slideUp(300, function(){});
+		                           } else {
+		                           		jQuery(this).text(meanContract);
+		                           		jQuery(this).prev('ul').slideDown(300, function(){});
+		                           }   
+		                           jQuery(this).toggleClass("mean-clicked"); 
+		                       });     
+	                       } else {
+	                           jQuery('.mean-nav ul ul').show();   
+	                       }
+	                   } else {
+	                       jQuery('.mean-nav ul ul').hide();
+	                   }
+	                   
+                    // add last class to tidy up borders
+                    jQuery('.mean-nav ul li').last().addClass('mean-last');
+                
+                    $navreveal.removeClass("meanclose");
+                    jQuery($navreveal).click(function(e){
+                    	e.preventDefault();
+	            		if( menuOn == false ) {
+	                        $navreveal.css("text-align", "center");
+	                        $navreveal.css("text-indent", "0");
+	                        $navreveal.css("font-size", meanMenuCloseSize);
+	                        jQuery('.mean-nav ul:first').slideDown(); 
+	                        menuOn = true;
+	                    } else {
+	                    	jQuery('.mean-nav ul:first').slideUp();
+	                    	menuOn = false;
+	                    }    
+                        $navreveal.toggleClass("meanclose");
+                        meanInner();
+                        jQuery(removeElements).addClass('mean-remove');
+                    });
+                    
+                    // for one page websites, reset all variables...
+                    if ( onePage ) {
+                    
+						jQuery('.mean-nav ul > li > a:first-child').on( "click" , function () {
+							jQuery('.mean-nav ul:first').slideUp();
+							menuOn = false;
+							jQuery($navreveal).toggleClass("meanclose").html(meanMenuOpen);
+						
+						});
+                    
+                    }
+                    
+                } else {
+                	meanOriginal();
+                }	
+            } 
+            
+            if (!isMobile) {
+                //reset menu on resize above meanScreenWidth
+                jQuery(window).resize(function () {
+                    currentWidth = window.innerWidth || document.documentElement.clientWidth;
+                    if (currentWidth > meanScreenWidth) {
+                        meanOriginal();
+                    } else {
+                    	meanOriginal();
+                    }	
+                    if (currentWidth <= meanScreenWidth) {
+                        showMeanMenu();
+                        meanCentered();
+                    } else {
+                    	meanOriginal();
+                    }	
+                });
+            }
+
+       		// adjust menu positioning on centered navigation     
+            window.onorientationchange = function() {
+            	meanCentered();
+            	// get browser width
+            	currentWidth = window.innerWidth || document.documentElement.clientWidth;
+            	if (currentWidth >= meanScreenWidth) {
+            		meanOriginal();
+            	}
+            	if (currentWidth <= meanScreenWidth) {
+            		if (meanMenuExist == false) {
+            			showMeanMenu();
+            		}
+            	}
+            }
+           // run main menuMenu function on load
+           showMeanMenu(); 
+        });
+    };
+})(jQuery);
+
+</script>
+
+  
+
+  
+  
+
+</body>
+</html>

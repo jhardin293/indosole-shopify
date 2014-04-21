@@ -1,0 +1,122 @@
+<div id="col-main">
+
+  <div id="product" class="clearfix content">
+
+    <div id="product-information">
+      
+      
+
+      <p id="add-to-cart-msg"></p>
+
+      
+      
+      {% if product.available %}
+      <div id="float-cart">      
+      	  <form action="/cart/add" method="post" class="variants" id="product-actions" enctype="multipart/form-data">
+          {% assign hide_default_title = false %}
+          {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
+            {% assign hide_default_title = true %}
+          {% endif %} 
+          
+          
+            <div class="options clearfix">  			   
+              <div class="variants-wrapper clearfix {% if hide_default_title %}visuallyhidden{% endif %}"> 
+                <select id="product-select" name="id">
+                  {% for variant in product.variants %}
+                  <option value="{{ variant.id }}">{{ variant.title | escape }} - {{ variant.price | money }}</option>
+                  {% endfor %}
+                </select>
+              </div>          
+              <div id="select-box-container"></div>
+              <div id="purchase">
+                <p class="price"></p>                                 
+                <input class="btn" type="submit" name="add" id="add-to-cart" value="Add to Cart" />
+              </div>
+
+            </div><!-- /.options -->
+            <a href="#" class="our-pkg">See our packaging</a>
+            <a href="javascript:void(0);" class="our-pkg" id="size-chart-link" onclick="show_chart_img()">Size Chart</a>
+      	  </form>
+      	</div>
+         {% else %}
+          <div id="product-actions" class="sold-out">
+            <div id="purchase">
+              <p class="price">Sold out.</p>      
+            </div>
+          </div>      
+        {% endif %}
+      
+
+    </div><!-- /#product-information -->
+    <div class="next-prev-nav">
+        {% if collection %}   
+        <div class="humans flip-products">
+        <nav class="nav-single">
+{% if collection.previous_product %}
+        <span class="nav-previous">
+        {{ '<span class="meta-nav">◄</span>' | link_to: collection.previous_product }}  
+        </span>        
+        {% endif %}
+        <span class="nav-label">flip through products</span>
+        {% if collection.next_product %}
+        <span class="nav-next">
+        {{ '<span class="meta-nav">►</span>' | link_to: collection.next_product }}           
+        </span>  
+        {% endif %}
+        </nav>
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- START MAGICZOOMPLUS IMAGES --><div id="product-gallery">{% include 'magiczoomplus' %}</div><!-- END MAGICZOOMPLUS IMAGES -->    
+    
+  </div><!-- /#product -->   
+  <!--<div id="product-header" class="diagonal-divider clearfix">-->
+  <div class="contents-container">
+    <div id="product-header-title">
+      <h1 id="product-title">{{ product.title }}</h1>
+      {% if settings.show_vendor %}<h2 id="product-vendor">{{ product.vendor | link_to_vendor }}</h2>{% endif %}
+    </div>    
+    <div class="description">
+      {{ product.description }}
+      {% include 'social-sharing' %} 
+    </div>     
+  </div>
+  <!--</div>--><!-- /#product-header -->
+  
+  <!--
+  
+  {% if settings.productspg_related_products %}
+  
+    {% include 'related-products' %}
+
+  {% elsif settings.productspg_featured_collection != blank %}
+
+    {% assign collection = collections[settings.productspg_featured_collection] %}
+    {% assign products   = collection.products %}
+
+    {% if products.size > 0 %}
+  	
+      <section class="diagonal-divider clearfix" style="display:none;">
+
+        {% unless settings.productspg_featured_collection_heading == blank %}
+        <header class="section-details clearfix">
+          <h1 class="section-title">{{ settings.productspg_featured_collection_heading | link_to: collection.url }}</h1>
+        </header> 
+        {% endunless %}
+
+        <ul class="product-grid" id="secondary-grid">
+          {% for product in products limit: settings.productspg_featured_limit %}
+          <li class="{% cycle '', '', '', 'last-in-row' %}">
+            {% include 'product-grid-item' %}
+          </li>
+          {% endfor %}
+        </ul>      
+
+      </section>
+    {% endif %}
+
+  {% endif %}
+-->
+
+</div><!-- /#col-main -->

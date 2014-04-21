@@ -1,0 +1,26 @@
+<div id="product-gallery"{% if settings.main_image_display == 'Zoom-in' and product.images.size > 0 %} class="zoom-in"{% endif %}>
+
+      <div id="active-wrapper">
+        {% if settings.main_image_display == 'Lightbox' %}
+        <a href="{{ product.featured_image | product_img_url: 'original' }}" rel="fancybox">
+        {% endif %}     
+          <img style="max-width:560px" src="{{ product.featured_image | product_img_url: 'large' }}" alt="{{ product.title | escape }}" id="large-thumb" />
+        {% if settings.main_image_display == 'Lightbox' %}
+        </a>
+        {% endif %}
+      </div>
+
+      <ul id="thumbs" {% if product.images.size == 1 %}class="visuallyhidden"{% endif %}>
+        {% for image in product.images %}
+        {% unless forloop.first and settings.main_image_display == 'Lightbox' %}
+        <li>
+          <a{% if settings.main_image_display == 'Lightbox' %} rel="fancybox"{% endif %} class="gallery" href="{{ image | product_img_url: 'original' }}" title="{{ image.alt | escape }}">
+            <img src="{{ image | product_img_url: 'original' }}" alt="{{ image.alt | escape }}" />
+          </a>
+        </li>
+        {% endunless %}
+        {% endfor %}
+      </ul> 
+      
+      
+    </div><!-- /#product-gallery -->
